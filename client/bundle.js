@@ -15,31 +15,25 @@ var socketHandlers = Object.freeze({
     return updatableTimer.innerHTML = 'Timer: ' + data.timer;
   },
   updateCounter: function updateCounter(data) {
-    console.log(data);
     counter = data.counter;
     updatableCounter.innerHTML = 'Counter: ' + counter;
   }
 });
 
-var emitter = function emitter(obj) {
-  return socket.emit('clientEmit', obj);
+var emitter = function emitter(eventName, data) {
+  return socket.emit('clientMsg', { eventName: eventName, data: data });
 };
 
 window.onload = function () {
-  console.log('Connecting to server at ' + SERVER_LOCATION + '...');
-  socket = io(SERVER_LOCATION);
+  window.socket = io.connect();
   socket.on('connect', function () {
-    console.log('Socket connected at ' + SERVER_LOCATION + '...');
-    socket.emit('test', { data: 'test' });
-    emitter({ eventName: 'test', data: { test: 'test' } });
+    return console.log('Connected to server...');
   });
   socket.on('serverMsg', function (data) {
     if (socketHandlers[data.eventName]) return socketHandlers[data.eventName](data.data);else console.warn('Missing event handler for ' + data.eventName + '!');
   });
 
   counterIncrementer.onclick = function () {
-    console.log('CLICKED');
-    socket.emit('test', { test: 'SOME DATA' });
-    emitter({ eventName: 'incrementCounter', data: {} });
+    return emitter('incrementCounter', {});
   };
 };

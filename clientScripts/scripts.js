@@ -13,30 +13,20 @@ let counter = 0;
 const socketHandlers = Object.freeze({
   updateTimer: data => updatableTimer.innerHTML = `Timer: ${data.timer}`,
   updateCounter: data => {
-    console.log(data);
     counter = data.counter;
     updatableCounter.innerHTML = `Counter: ${counter}`;
   },
 });
 
-const emitter = obj => socket.emit('clientEmit', obj);
+const emitter = (eventName, data) => socket.emit('clientMsg', { eventName, data });
 
 window.onload = () => {
-  console.log(`Connecting to server at ${SERVER_LOCATION}...`)
-  socket = io(SERVER_LOCATION);
-  socket.on('connect', () => {
-    console.log(`Socket connected at ${SERVER_LOCATION}...`);
-    socket.emit('test', {data: 'test'});
-    emitter({eventName: 'test', data: {test: 'test'}});
-  });
+  window.socket = io.connect();
+  socket.on('connect', () => console.log('Connected to server...'));
   socket.on('serverMsg', (data) => {
      if (socketHandlers[data.eventName]) return socketHandlers[data.eventName](data.data);
      else console.warn(`Missing event handler for ${data.eventName}!`);
   });
 
-  counterIncrementer.onclick = () => {
-    console.log('CLICKED');
-    socket.emit('test', {test: 'SOME DATA'});
-    emitter({ eventName: 'incrementCounter', data: {} });
-  }
+  counterIncrementer.onclick = () => emitter('incrementCounter', {});
 };

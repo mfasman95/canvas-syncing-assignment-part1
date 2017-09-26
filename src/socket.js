@@ -14,17 +14,13 @@ const updateTimer = () => {
 
 
 const incrementCounter = () => {
-  console.log('Boop!');
   counter++;
   emitToTall('updateCounter', { counter });
 };
 
 const socketHandlers = Object.freeze({
   test: data => console.log(data),
-  incrementCounter: (data) => {
-    console.log('INCREMENT!');
-    incrementCounter();
-  },
+  incrementCounter,
 });
 
 const onDisconnect = (sock) => {
@@ -41,8 +37,7 @@ module.exports = Object.freeze({
       emitToSocket(socket)('updateTimer', { timer });
       emitToSocket(socket)('updateCounter', { counter });
       console.log(`Socket ${socket.id} has connected...`);
-      socket.on('clientMsg', (eventName, data) => {
-        console.log(eventName);
+      socket.on('clientMsg', (data) => {
         if (socketHandlers[data.eventName]) return socketHandlers[data.eventName](data.data);
         return console.warn(`Missing event handler for ${data.eventName}!`);
       });
