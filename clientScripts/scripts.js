@@ -2,8 +2,6 @@
 /* eslint-disable */
 'use strict';
 
-let socket;
-const SERVER_LOCATION = 'localhost:3000';
 const updatableTimer = document.querySelector('#updatableTimer');
 const updatableCounter = document.querySelector('#updatableCounter');
 const counterIncrementer = document.querySelector('#counterIncrement');
